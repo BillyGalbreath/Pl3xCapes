@@ -1,0 +1,9 @@
+[{
+  "modid": "capes",
+  "name": "Capes",
+  "description": "Wear a banner like a cape",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "authorList": ["BillyGalbreath"],
+  "logoFile": "assets/logo.png"
+}]
