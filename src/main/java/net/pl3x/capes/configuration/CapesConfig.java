@@ -8,10 +8,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.pl3x.capes.Capes;
 
 @Config(modid = Capes.modId)
-@Config.LangKey("capes.config.title")
+@Config.LangKey("config.title")
 public class CapesConfig {
-    @Config.Name("Drop Cape On Death")
-    @Config.Comment("When killed, player cape will drop to the ground")
+    @Config.LangKey("config.drop_on_death")
     public static boolean dropOnDeath = false;
 
     @Mod.EventBusSubscriber(modid = Capes.modId)

@@ -2,3 +2,7 @@ gui.cape=Cape Inventory
 
 key.categories.capes=Capes
 key.capes.gui=Open Cape Inventory
+
+config.title=Capes Config
+config.drop_on_death=Drop Cape On Death
+config.drop_on_death.tooltip=When killed, player cape will drop to the ground
