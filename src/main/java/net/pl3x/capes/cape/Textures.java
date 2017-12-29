@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class Textures {
     public static final Cache CAPE_DESIGNS = new Cache(new ResourceLocation(Capes.modId, "textures/entity/cape_base.png"), Capes.modId + ":textures/entity/cape/");
-    public static final ResourceLocation CAPE_BASE_TEXTURE = new ResourceLocation(Capes.modId, "textures/entity/cape/base.png");
+    private static final ResourceLocation CAPE_BASE_TEXTURE = new ResourceLocation(Capes.modId, "textures/entity/cape/base.png");
 
     @SideOnly(Side.CLIENT)
     public static class Cache {
@@ -26,7 +26,7 @@ public class Textures {
         private final ResourceLocation cacheResourceLocation;
         private final String cacheResourceBase;
 
-        public Cache(ResourceLocation baseResource, String resourcePath) {
+        Cache(ResourceLocation baseResource, String resourcePath) {
             cacheResourceLocation = baseResource;
             cacheResourceBase = resourcePath;
         }
@@ -74,8 +74,8 @@ public class Textures {
 
     @SideOnly(Side.CLIENT)
     static class CacheEntry {
-        public long lastUseMillis;
-        public ResourceLocation textureLocation;
+        long lastUseMillis;
+        ResourceLocation textureLocation;
 
         private CacheEntry() {
         }

@@ -10,7 +10,11 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class CapeManager {
-    private static HashMap<UUID, CapeData> capeList = new HashMap<>();
+    private static final HashMap<UUID, CapeData> capeList = new HashMap<>();
+
+    public static void clear() {
+        capeList.clear();
+    }
 
     public static void addCape(UUID uuid, ItemStack stack) {
         if (stack.getItem() == Items.BANNER) {

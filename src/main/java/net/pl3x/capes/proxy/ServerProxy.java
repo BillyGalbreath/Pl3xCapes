@@ -1,30 +1,70 @@
 package net.pl3x.capes.proxy;
 
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.pl3x.capes.Capes;
-import net.pl3x.capes.capability.PlayerData;
-import net.pl3x.capes.gui.ModGuiHandler;
-import net.pl3x.capes.listener.CapabilityHandler;
-import net.pl3x.capes.listener.ServerEventHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.pl3x.capes.capability.CapabilityHandler;
+import net.pl3x.capes.configuration.CapesConfig;
 import net.pl3x.capes.network.PacketHandler;
+import net.pl3x.capes.network.client.CUpdateCapePacket;
 
-public class ServerProxy {
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class ServerProxy extends CommonProxy {
+    @Override
     public void preInit(FMLPreInitializationEvent event) {
+        super.preInit(event);
+
+        CapesConfig.INSTANCE.init();
     }
 
+    @Override
     public void init(FMLInitializationEvent event) {
-        CapabilityManager.INSTANCE.register(PlayerData.class, new PlayerData.Storage(), PlayerData.class);
+        super.init(event);
 
-        NetworkRegistry.INSTANCE.registerGuiHandler(Capes.instance, new ModGuiHandler());
+        MinecraftForge.EVENT_BUS.register(this);
+    }
 
-        MinecraftForge.EVENT_BUS.register(new CapabilityHandler());
-        MinecraftForge.EVENT_BUS.register(new ServerEventHandler());
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void on(PlayerEvent.PlayerLoggedInEvent event) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                EntityPlayerMP player = (EntityPlayerMP) event.player;
+                PacketHandler.sendAllCapesToPlayer(player);
+                ItemStack cape = CapabilityHandler.getCape(player);
+                if (!cape.isEmpty()) {
+                    PacketHandler.INSTANCE.sendToAll(new CUpdateCapePacket(player.getUniqueID(), cape));
+                }
+            }
+        }, 1000L);
+    }
 
-        PacketHandler.init();
+    @SubscribeEvent
+    public void on(EntityJoinWorldEvent event) {
+        if (event.getEntity() instanceof EntityPlayerMP) {
+            PacketHandler.sendAllCapesToPlayer((EntityPlayerMP) event.getEntity());
+        }
+    }
+
+    @SubscribeEvent
+    public void on(LivingDropsEvent event) {
+        if (CapesConfig.INSTANCE.data.dropOnDeath && event.getEntity() instanceof EntityPlayerMP) {
+            EntityPlayerMP player = (EntityPlayerMP) event.getEntity();
+            ItemStack cape = CapabilityHandler.getCape(player);
+            if (!cape.isEmpty()) {
+                event.getDrops().add(new EntityItem(player.world, player.posX, player.posY, player.posZ, cape));
+                CapabilityHandler.setCape(player, ItemStack.EMPTY);
+            }
+        }
     }
 }
-

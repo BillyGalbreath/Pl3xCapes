@@ -1,21 +1,21 @@
-package net.pl3x.capes.network;
+package net.pl3x.capes.network.client;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.pl3x.capes.Capes;
 import net.pl3x.capes.capability.PlayerData;
 
-public class PlayerDataPacket implements IMessage {
-    private NBTTagCompound nbt;
+public class CPlayerDataPacket implements IMessage {
+    NBTTagCompound nbt;
 
-    public PlayerDataPacket() {
+    public CPlayerDataPacket() {
     }
 
-    public PlayerDataPacket(PlayerData playerData) {
+    public CPlayerDataPacket(PlayerData playerData) {
         this.nbt = playerData.getDataAsNBT();
     }
 
@@ -29,13 +29,10 @@ public class PlayerDataPacket implements IMessage {
         ByteBufUtils.writeTag(buf, nbt);
     }
 
-    public static class Handler implements IMessageHandler<PlayerDataPacket, IMessage> {
+    public static class Handler implements IMessageHandler<CPlayerDataPacket, IMessage> {
         @Override
-        public IMessage onMessage(PlayerDataPacket packet, MessageContext context) {
-            Minecraft.getMinecraft().addScheduledTask(() -> {
-                PlayerData capability = Minecraft.getMinecraft().player.getCapability(PlayerData.Provider.CAPABILITY, null);
-                capability.setDataFromNBT(packet.nbt);
-            });
+        public IMessage onMessage(CPlayerDataPacket packet, MessageContext ctx) {
+            Capes.proxy.packetHandler.handleCPlayerData(packet, ctx);
             return null;
         }
     }

@@ -17,12 +17,12 @@ import net.pl3x.capes.CapeManager;
 import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
-public class LayerPl3xElytra implements LayerRenderer<AbstractClientPlayer> {
+public class ElytraLayerRenderer implements LayerRenderer<AbstractClientPlayer> {
     private final RenderPlayer renderPlayer;
     private final ModelElytra modelElytra = new ModelElytra();
     private static final ResourceLocation TEXTURE_ELYTRA = new ResourceLocation("textures/entity/elytra.png");
 
-    public LayerPl3xElytra(RenderPlayer renderer) {
+    public ElytraLayerRenderer(RenderPlayer renderer) {
         renderPlayer = renderer;
     }
 

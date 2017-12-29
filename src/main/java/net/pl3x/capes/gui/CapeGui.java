@@ -18,9 +18,8 @@ public class CapeGui extends GuiContainer {
     private ItemStack cape;
     private ResourceLocation capeLocation;
 
-    public CapeGui(Container container) {
+    CapeGui(Container container) {
         super(container);
-        System.out.println("CLIENT");
         this.container = (CapeContainer) inventorySlots;
     }
 
@@ -44,7 +43,7 @@ public class CapeGui extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String title = I18n.format("container.cape");
+        String title = I18n.format("gui.cape");
         fontRenderer.drawString(title, xSize - fontRenderer.getStringWidth(title) - 8, 6, 0x404040);
     }
 

@@ -1,4 +1,4 @@
-package net.pl3x.capes.network;
+package net.pl3x.capes.network.client;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
@@ -6,18 +6,18 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.pl3x.capes.CapeManager;
+import net.pl3x.capes.Capes;
 
 import java.util.UUID;
 
-public class SendCapePacket implements IMessage {
-    public UUID uuid;
-    public ItemStack stack;
+public class CUpdateCapePacket implements IMessage {
+    UUID uuid;
+    ItemStack stack;
 
-    public SendCapePacket() {
+    public CUpdateCapePacket() {
     }
 
-    public SendCapePacket(UUID uuid, ItemStack stack) {
+    public CUpdateCapePacket(UUID uuid, ItemStack stack) {
         this.uuid = uuid;
         this.stack = stack;
     }
@@ -34,10 +34,10 @@ public class SendCapePacket implements IMessage {
         ByteBufUtils.writeItemStack(buf, stack);
     }
 
-    public static class Handler implements IMessageHandler<SendCapePacket, IMessage> {
+    public static class Handler implements IMessageHandler<CUpdateCapePacket, IMessage> {
         @Override
-        public IMessage onMessage(SendCapePacket message, MessageContext ctx) {
-            CapeManager.addCape(message.uuid, message.stack);
+        public IMessage onMessage(CUpdateCapePacket packet, MessageContext ctx) {
+            Capes.proxy.packetHandler.handleCUpdateCape(packet, ctx);
             return null;
         }
     }

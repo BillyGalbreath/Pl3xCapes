@@ -6,35 +6,36 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerCape;
 import net.minecraft.client.renderer.entity.layers.LayerElytra;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.pl3x.capes.cape.LayerPl3xCape;
-import net.pl3x.capes.cape.LayerPl3xElytra;
-import net.pl3x.capes.listener.KeyBindings;
-import net.pl3x.capes.listener.KeyInputHandler;
-import net.pl3x.capes.tileentity.TileEntityCape;
-import net.pl3x.capes.tileentity.render.TileEntityCapeRenderer;
+import net.pl3x.capes.CapeManager;
+import net.pl3x.capes.cape.CapeLayerRenderer;
+import net.pl3x.capes.cape.ElytraLayerRenderer;
+import net.pl3x.capes.keys.KeyBindings;
+import net.pl3x.capes.network.client.ClientHandler;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
-public class ClientProxy extends ServerProxy {
+public class ClientProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCape.class, new TileEntityCapeRenderer());
     }
 
     @Override
     public void init(FMLInitializationEvent event) {
         super.init(event);
 
-        MinecraftForge.EVENT_BUS.register(new KeyInputHandler());
-        KeyBindings.init();
+        packetHandler = new ClientHandler();
+
+        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new KeyBindings());
 
         for (RenderPlayer renderer : Minecraft.getMinecraft().getRenderManager().getSkinMap().values()) {
             try {
@@ -55,8 +56,13 @@ public class ClientProxy extends ServerProxy {
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-            renderer.addLayer(new LayerPl3xCape(renderer));
-            renderer.addLayer(new LayerPl3xElytra(renderer));
+            renderer.addLayer(new CapeLayerRenderer(renderer));
+            renderer.addLayer(new ElytraLayerRenderer(renderer));
         }
+    }
+
+    @SubscribeEvent
+    public void on(PlayerEvent.PlayerLoggedOutEvent event) {
+        CapeManager.clear();
     }
 }

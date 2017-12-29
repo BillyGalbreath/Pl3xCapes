@@ -1,30 +1,27 @@
 package net.pl3x.capes.container;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import net.pl3x.capes.listener.CapabilityHandler;
+import net.pl3x.capes.capability.CapabilityHandler;
 import net.pl3x.capes.network.PacketHandler;
-import net.pl3x.capes.network.RequestCapePacket;
+import net.pl3x.capes.network.client.CUpdateCapePacket;
 
 import javax.annotation.Nonnull;
 
 public class CapeContainer extends Container {
-    private ItemStackHandler capeInventory;
-
     public CapeContainer(EntityPlayer player) {
-        System.out.println("SERVER");
-        capeInventory = CapabilityHandler.getCapeInventory(player);
-
-        addSlotToContainer(new SlotItemHandler(capeInventory, 0, 8, 35) {
+        addSlotToContainer(new SlotItemHandler(CapabilityHandler.getCapability(player), 0, 8, 35) {
             @Override
             public void onSlotChanged() {
-                CapabilityHandler.setCapeInventory(player, capeInventory);
-                PacketHandler.INSTANCE.sendToAll(new RequestCapePacket());
+                //PacketHandler.INSTANCE.sendToServer(new SUpdateCapePacket(getStack()));
+                if (player instanceof EntityPlayerMP) {
+                    PacketHandler.INSTANCE.sendToAll(new CUpdateCapePacket(player.getUniqueID(), getStack()));
+                }
             }
 
             @Override
