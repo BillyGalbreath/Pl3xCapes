@@ -37,20 +37,16 @@ public class CommonProxy {
     @SubscribeEvent
     public void on(LivingDropsEvent event) {
         if (!CapesConfig.dropOnDeath) {
-            System.out.println("Drop on death DISABLED");
             return; // drop on death disabled
         }
         if (!(event.getEntity() instanceof EntityPlayerMP)) {
-            System.out.println("Drop on death NOT MP");
             return; // only drop from server instance
         }
         EntityPlayerMP player = (EntityPlayerMP) event.getEntity();
         ItemStack cape = CapabilityHandler.getCape(player);
         if (cape.isEmpty()) {
-            System.out.println("Drop on death CAPE EMPTY");
             return;
         }
-        System.out.println("Drop on death DROPPED");
         event.getDrops().add(new EntityItem(player.world, player.posX, player.posY, player.posZ, cape));
         CapabilityHandler.setCape(player, ItemStack.EMPTY);
     }
